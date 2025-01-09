@@ -9,14 +9,14 @@ type Token struct {
 	Value string
 }
 
-func newUniqueToken(tp TokenType, value string) Token {
+func newToken(tp TokenType, value string) Token {
 	return Token{
 		tp, value,
 	}
 }
 
 func (token Token) Debug() {
-	fmt.Printf("%s()\n", formatTokenToString(token.Type))
+	fmt.Printf("%s(%s)\n", formatTokenToString(token.Type), token.Value)
 }
 
 func formatTokenToString(tp TokenType) string {
