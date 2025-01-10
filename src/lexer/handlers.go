@@ -1,6 +1,7 @@
 package lexer
 
 import (
+	"fmt"
 	"regexp"
 	"strings"
 )
@@ -24,12 +25,18 @@ func skipHandler(lex *lexer, regex *regexp.Regexp) {
 	lex.advancePosition(match[1])
 }
 
+// TODO: create the handlers for the model, the model name and etc here
+
 func modelNameHandler(lex *lexer, regex *regexp.Regexp) {
 	match := regex.FindStringIndex(lex.remainingSourceCode())
 	modelName := strings.TrimSpace(lex.remainingSourceCode()[:match[1]-1])
 
+	err := validateModelName(modelName)
+
+	if err != nil {
+		panic(fmt.Sprintln(err))
+	}
+
 	lex.advancePosition(len(modelName))
 	lex.push(newToken(MODEL_NAME, modelName))
 }
-
-//TODO: create the handlers for the model, the model name and etc here
