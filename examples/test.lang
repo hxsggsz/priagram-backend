@@ -1,3 +1,2 @@
-model Username {
-  id            String    @id @default(cuid())
+model UserName {
 }

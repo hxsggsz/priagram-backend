@@ -12,5 +12,5 @@ func validateModelName(name string) error {
 		return nil
 	}
 
-	return fmt.Errorf("model name %s is not in CamelCase", name)
+	return fmt.Errorf("lexer::error -> model name %s is not in CamelCase", name)
 }

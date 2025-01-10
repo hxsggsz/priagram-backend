@@ -34,11 +34,12 @@ func createLexer(source string) *lexer {
 		source: source,
 		Tokens: make([]Token, 0),
 		patterns: []regexPattern{
-			{regexp.MustCompile(`\{`), defaultHandler(OPEN_CURLY, "{")},
 			{regexp.MustCompile(`\s+`), skipHandler}, // skips whitespaces
+			{regexp.MustCompile(`\{`), defaultHandler(OPEN_CURLY, "{")},
 			{regexp.MustCompile(`\}`), defaultHandler(CLOSE_CURLY, "}")},
 			{regexp.MustCompile(`\bmodel\b`), defaultHandler(MODEL, "model")},
 			{regexp.MustCompile(`(.*?)\s*{`), modelNameHandler},
+			{regexp.MustCompile(`^.*\n`), columnHandler},
 		},
 	}
 }

@@ -1,7 +1,6 @@
 package lexer
 
 import (
-	"fmt"
 	"regexp"
 	"strings"
 )
@@ -34,9 +33,17 @@ func modelNameHandler(lex *lexer, regex *regexp.Regexp) {
 	err := validateModelName(modelName)
 
 	if err != nil {
-		panic(fmt.Sprintln(err))
+		panic(err)
 	}
 
 	lex.advancePosition(len(modelName))
 	lex.push(newToken(MODEL_NAME, modelName))
+}
+
+func columnHandler(lex *lexer, regex *regexp.Regexp) {
+	match := regex.FindStringSubmatch(lex.remainingSourceCode())
+	// TODO: get the column name and type here
+
+	lex.advancePosition(len(match[0]))
+	lex.push(newToken(ID, "id"))
 }
