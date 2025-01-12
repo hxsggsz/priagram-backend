@@ -6,7 +6,8 @@ const (
 	CLOSE_CURLY
 	MODEL
 	MODEL_NAME
-	ID
+	COLUMN_NAME
+	COLUMN_TYPE
 )
 
 var ReservedWords map[TokenType]string = map[TokenType]string{
@@ -15,5 +16,6 @@ var ReservedWords map[TokenType]string = map[TokenType]string{
 	OPEN_CURLY:  "open curly",
 	MODEL:       "model",
 	MODEL_NAME:  "model name",
-	ID:          "id",
+	COLUMN_NAME: "column name",
+	COLUMN_TYPE: "column type",
 }

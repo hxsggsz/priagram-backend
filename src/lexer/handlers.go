@@ -40,10 +40,16 @@ func modelNameHandler(lex *lexer, regex *regexp.Regexp) {
 	lex.push(newToken(MODEL_NAME, modelName))
 }
 
-func columnHandler(lex *lexer, regex *regexp.Regexp) {
+func columnNameHandler(lex *lexer, regex *regexp.Regexp) {
 	match := regex.FindStringSubmatch(lex.remainingSourceCode())
-	// TODO: get the column name and type here
 
+	lex.push(newToken(COLUMN_NAME, match[0]))
 	lex.advancePosition(len(match[0]))
-	lex.push(newToken(ID, "id"))
+}
+
+func columnTypeHandler(lex *lexer, regex *regexp.Regexp) {
+	match := regex.FindStringSubmatch(lex.remainingSourceCode())
+
+	lex.push(newToken(COLUMN_TYPE, match[0]))
+	lex.advancePosition(len(match[0]))
 }

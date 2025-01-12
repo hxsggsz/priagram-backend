@@ -39,7 +39,8 @@ func createLexer(source string) *lexer {
 			{regexp.MustCompile(`\}`), defaultHandler(CLOSE_CURLY, "}")},
 			{regexp.MustCompile(`\bmodel\b`), defaultHandler(MODEL, "model")},
 			{regexp.MustCompile(`(.*?)\s*{`), modelNameHandler},
-			{regexp.MustCompile(`^.*\n`), columnHandler},
+			{regexp.MustCompile(`^[A-Z][a-zA-Z]*(\?|(\[\]))?`), columnTypeHandler},
+			{regexp.MustCompile(`^\S+`), columnNameHandler},
 		},
 	}
 }
