@@ -8,6 +8,7 @@ const (
 	MODEL_NAME
 	COLUMN_NAME
 	COLUMN_TYPE
+	RELATION
 )
 
 var ReservedWords map[TokenType]string = map[TokenType]string{
@@ -18,4 +19,5 @@ var ReservedWords map[TokenType]string = map[TokenType]string{
 	MODEL_NAME:  "model name",
 	COLUMN_NAME: "column name",
 	COLUMN_TYPE: "column type",
+	RELATION:    "realtion",
 }

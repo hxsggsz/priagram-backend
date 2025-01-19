@@ -21,7 +21,7 @@ func Tokenize(source string) []Token {
 
 		// TODO: update this to print the location and the line it happened
 		if !matched {
-			panic(fmt.Sprintf("Lexer::Error -> unrecognized token near %s\n", lex.remainingSourceCode()))
+			panic(fmt.Sprintf("Lexer::Error -> unrecognized token at position (%d) near %s\n", lex.pos, lex.remainingSourceCode()))
 		}
 	}
 

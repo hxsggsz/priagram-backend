@@ -1,6 +1,7 @@
 package lexer
 
 import (
+	"fmt"
 	"regexp"
 	"strings"
 )
@@ -23,8 +24,6 @@ func skipHandler(lex *lexer, regex *regexp.Regexp) {
 	match := regex.FindStringIndex(lex.remainingSourceCode())
 	lex.advancePosition(match[1])
 }
-
-// TODO: create the handlers for the model, the model name and etc here
 
 func modelNameHandler(lex *lexer, regex *regexp.Regexp) {
 	match := regex.FindStringIndex(lex.remainingSourceCode())
@@ -49,7 +48,15 @@ func columnNameHandler(lex *lexer, regex *regexp.Regexp) {
 
 func columnTypeHandler(lex *lexer, regex *regexp.Regexp) {
 	match := regex.FindStringSubmatch(lex.remainingSourceCode())
+	fmt.Println("match:", match[0], "remaining:", lex.remainingSourceCode())
 
 	lex.push(newToken(COLUMN_TYPE, match[0]))
+	lex.advancePosition(len(match[0]))
+}
+
+func columnRelationHandler(lex *lexer, regex *regexp.Regexp) {
+	match := regex.FindStringSubmatch(lex.remainingSourceCode())
+
+	lex.push(newToken(RELATION, "relation"))
 	lex.advancePosition(len(match[0]))
 }
