@@ -1,7 +1,6 @@
 package lexer
 
 import (
-	"fmt"
 	"regexp"
 	"strings"
 )
@@ -47,11 +46,17 @@ func columnNameHandler(lex *lexer, regex *regexp.Regexp) {
 }
 
 func columnTypeHandler(lex *lexer, regex *regexp.Regexp) {
-	match := regex.FindStringSubmatch(lex.remainingSourceCode())
-	fmt.Println("match:", match[0], "remaining:", lex.remainingSourceCode())
+	matches := regex.FindStringSubmatch(lex.remainingSourceCode())
+	match := matches[0]
+	lastToken := lex.getLastToken().Value
 
-	lex.push(newToken(COLUMN_TYPE, match[0]))
-	lex.advancePosition(len(match[0]))
+	if strings.Contains(match, lastToken) {
+		lex.advancePosition(len(match))
+		lex.removeLastToken()
+	} else {
+		lex.advancePosition(len(match))
+		lex.push(newToken(COLUMN_TYPE, match))
+	}
 }
 
 func columnRelationHandler(lex *lexer, regex *regexp.Regexp) {

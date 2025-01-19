@@ -16,12 +16,24 @@ func (lex *lexer) push(token Token) {
 	lex.Tokens = append(lex.Tokens, token)
 }
 
+func (lex *lexer) removeLastToken() {
+	tokens := lex.Tokens
+
+	if len(tokens) > 0 {
+		lex.Tokens = tokens[:len(tokens)-1]
+	}
+}
+
 // gets the remaining source code attached to the lexer struct from the current position to the end with the :
 //
 // Return:
 //   - string: the remaining code according by the current lexer position
 func (lex *lexer) remainingSourceCode() string {
 	return lex.source[lex.pos:]
+}
+
+func (lex *lexer) getLastToken() Token {
+	return lex.Tokens[len(lex.Tokens)-1]
 }
 
 func (lex *lexer) atEof() bool {
