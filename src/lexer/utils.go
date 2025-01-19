@@ -32,6 +32,17 @@ func (lex *lexer) remainingSourceCode() string {
 	return lex.source[lex.pos:]
 }
 
+func (lex *lexer) modelName() Token {
+	var token Token
+
+	for _, tk := range lex.Tokens {
+		if tk.Type == MODEL_NAME {
+			token = tk
+		}
+	}
+	return token
+}
+
 func (lex *lexer) getLastToken() Token {
 	return lex.Tokens[len(lex.Tokens)-1]
 }

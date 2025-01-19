@@ -61,7 +61,8 @@ func columnTypeHandler(lex *lexer, regex *regexp.Regexp) {
 
 func columnRelationHandler(lex *lexer, regex *regexp.Regexp) {
 	match := regex.FindStringSubmatch(lex.remainingSourceCode())
+	modelName := lex.modelName().Value
 
-	lex.push(newToken(RELATION, "relation"))
+	lex.push(newToken(RELATION, modelName))
 	lex.advancePosition(len(match[0]))
 }
