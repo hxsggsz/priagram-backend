@@ -28,3 +28,9 @@ func Tokenize(source string) []Token {
 	lex.push(newToken(EOF, "EOF"))
 	return lex.Tokens
 }
+
+func Format(tokens []Token) {
+	for _, tk := range tokens {
+		fmt.Println(tk.Value)
+	}
+}

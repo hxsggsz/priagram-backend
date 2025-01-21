@@ -1,4 +1,2 @@
-model UserName {
-id            String    
-name          String?
-}
+model Test {} model UserName { id String name String? Ticket    Ticket?   @relation(fields: [ticketId], references: [id]) }
+
