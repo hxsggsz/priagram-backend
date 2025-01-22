@@ -46,6 +46,13 @@ func (lex *lexer) modelName() Token {
 func (lex *lexer) getLastToken() Token {
 	return lex.Tokens[len(lex.Tokens)-1]
 }
+func (token Token) isOneOfMany(expectedTokens ...TokenType) bool {
+	for _, expected := range expectedTokens {
+		return expected == token.Type
+	}
+
+	return false
+}
 
 func (lex *lexer) atEof() bool {
 	return lex.pos >= len(lex.source)
