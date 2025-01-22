@@ -44,23 +44,17 @@ func Format(tokens []Token) formatter.DiagramData {
 			continue
 		}
 
-		fmt.Println("current token:", tk.Type, tk.Value)
-
 		switch tk.Type {
 		case MODEL_NAME:
-			fmt.Println("current model name: ", tk.Type, tk.Value)
 			modelName = tk.Value
 
 		case COLUMN_TYPE:
-			fmt.Println("current column type: ", tk.Type, tk.Value)
 			colType = append(colType, tk.Value)
 
 		case COLUMN_NAME:
-			fmt.Println("current column name: ", tk.Type, tk.Value)
 			colName = append(colName, tk.Value)
 
 		case RELATION:
-			fmt.Println("current relation name: ", tk.Type, tk.Value)
 			colRelations = append(colRelations, tk.Value)
 		}
 	}
@@ -71,10 +65,10 @@ func Format(tokens []Token) formatter.DiagramData {
 		modelContents = append(modelContents, mc)
 	}
 
-	for _, rl := range colRelations {
-		formatedId := id.FmtId(modelName, rl)
-		nr := formatter.NewRelation(formatedId, modelName, rl)
-		modelRelations = append(modelRelations, nr)
+	for _, relation := range colRelations {
+		formatedId := id.FmtId(modelName, relation)
+		newRelation := formatter.NewRelation(formatedId, modelName, relation)
+		modelRelations = append(modelRelations, newRelation)
 	}
 
 	return formatter.NewDiagramData(modelName, "prisma-table", modelContents, modelRelations)
