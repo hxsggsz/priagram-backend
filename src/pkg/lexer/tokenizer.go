@@ -2,6 +2,7 @@ package lexer
 
 import (
 	"fmt"
+	"priagram/src/pkg/id"
 	"priagram/src/pkg/lexer/formatter"
 )
 
@@ -34,8 +35,9 @@ func Tokenize(source string) []Token {
 
 func Format(tokens []Token) formatter.DiagramData {
 	var modelContents []formatter.ModelContent
-	var modelName, colRelation string
-	var colName, colType []string
+	var modelRelations []formatter.Relation
+	var modelName string
+	var colName, colType, colRelations []string
 
 	for _, tk := range tokens {
 		if tk.isOneOfMany(MODEL, EOF, OPEN_CURLY, CLOSE_CURLY) {
@@ -58,15 +60,22 @@ func Format(tokens []Token) formatter.DiagramData {
 			colName = append(colName, tk.Value)
 
 		case RELATION:
-			fmt.Println("current column name: ", tk.Type, tk.Value)
-			colRelation = tk.Value
+			fmt.Println("current relation name: ", tk.Type, tk.Value)
+			colRelations = append(colRelations, tk.Value)
 		}
 	}
 
 	for i := 0; i < len(colName); i++ {
-		mc := formatter.NewModelContent(colName[i], colName[i], colType[i])
+		formatedId := id.FmtId(colName[i], colType[i])
+		mc := formatter.NewModelContent(formatedId, colName[i], colType[i])
 		modelContents = append(modelContents, mc)
 	}
 
-	return formatter.NewDiagramData(modelName, "prisma-table", modelContents)
+	for _, rl := range colRelations {
+		formatedId := id.FmtId(modelName, rl)
+		nr := formatter.NewRelation(formatedId, modelName, rl)
+		modelRelations = append(modelRelations, nr)
+	}
+
+	return formatter.NewDiagramData(modelName, "prisma-table", modelContents, modelRelations)
 }
