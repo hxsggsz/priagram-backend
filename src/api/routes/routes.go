@@ -3,7 +3,6 @@ package routes
 import (
 	"encoding/json"
 	"io"
-	"log"
 	"net/http"
 
 	"priagram/src/api/dtos"
@@ -45,8 +44,6 @@ func PrismaToDiagram(w http.ResponseWriter, r *http.Request) {
 	if prismaRequest.Source == "" {
 		http.Error(w, "Invalid JSON -> missing source in body", http.StatusBadRequest)
 	}
-
-	log.Printf("Received: %+v\n", prismaRequest)
 
 	tokens := lexer.Tokenize(prismaRequest.Source)
 	formatedData := lexer.Format(tokens)

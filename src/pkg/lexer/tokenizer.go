@@ -33,43 +33,93 @@ func Tokenize(source string) []Token {
 	return lex.Tokens
 }
 
-func Format(tokens []Token) formatter.DiagramData {
-	var modelContents []formatter.ModelContent
-	var modelRelations []formatter.Relation
-	var modelName string
-	var colName, colType, colRelations []string
+func Format(tokens []Token) []formatter.DiagramData {
+	var formatedDiagram []formatter.DiagramData
+
+	modelGroups := splitIntoModels(tokens)
+
+	for _, group := range modelGroups {
+		modelName, modelContents, modelRelations := processModel(group)
+
+		formatedDiagram = append(formatedDiagram, formatter.NewDiagramData(
+			modelName,
+			"prisma-table",
+			modelContents,
+			modelRelations,
+		))
+	}
+
+	return formatedDiagram
+}
+
+func splitIntoModels(tokens []Token) [][]Token {
+	var groups [][]Token
+	var currentGroup []Token
+	inModel := false
 
 	for _, tk := range tokens {
-		if tk.isOneOfMany(MODEL, EOF, OPEN_CURLY, CLOSE_CURLY) {
+		if tk.Type == MODEL {
+			inModel = true
+			currentGroup = []Token{}
 			continue
 		}
 
+		if inModel {
+			currentGroup = append(currentGroup, tk)
+		}
+
+		if tk.Type == CLOSE_CURLY && inModel {
+			groups = append(groups, currentGroup)
+			inModel = false
+		}
+	}
+
+	return groups
+}
+
+func processModel(tokens []Token) (string, []formatter.ModelContent, []formatter.Relation) {
+	var modelName string
+	var colNames, colTypes, colRelations []string
+
+	for _, tk := range tokens {
 		switch tk.Type {
 		case MODEL_NAME:
 			modelName = tk.Value
-
-		case COLUMN_TYPE:
-			colType = append(colType, tk.Value)
-
 		case COLUMN_NAME:
-			colName = append(colName, tk.Value)
-
+			colNames = append(colNames, tk.Value)
+		case COLUMN_TYPE:
+			colTypes = append(colTypes, tk.Value)
 		case RELATION:
 			colRelations = append(colRelations, tk.Value)
 		}
 	}
 
-	for i := 0; i < len(colName); i++ {
-		formatedId := id.FmtId(colName[i], colType[i])
-		mc := formatter.NewModelContent(formatedId, colName[i], colType[i])
-		modelContents = append(modelContents, mc)
+	modelContents := createModelContents(colNames, colTypes)
+	modelRelations := createRelations(modelName, colRelations)
+
+	return modelName, modelContents, modelRelations
+}
+
+func createModelContents(colNames, colTypes []string) []formatter.ModelContent {
+	var contents []formatter.ModelContent
+
+	for i := 0; i < len(colNames); i++ {
+		formatedId := id.FmtId(colNames[i], colTypes[i])
+		mc := formatter.NewModelContent(formatedId, colNames[i], colTypes[i])
+		contents = append(contents, mc)
 	}
 
-	for _, relation := range colRelations {
+	return contents
+}
+
+func createRelations(modelName string, relations []string) []formatter.Relation {
+	var modelRelations []formatter.Relation
+
+	for _, relation := range relations {
 		formatedId := id.FmtId(modelName, relation)
 		newRelation := formatter.NewRelation(formatedId, modelName, relation)
 		modelRelations = append(modelRelations, newRelation)
 	}
 
-	return formatter.NewDiagramData(modelName, "prisma-table", modelContents, modelRelations)
+	return modelRelations
 }

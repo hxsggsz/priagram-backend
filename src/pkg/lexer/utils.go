@@ -32,21 +32,10 @@ func (lex *lexer) remainingSourceCode() string {
 	return lex.source[lex.pos:]
 }
 
-func (lex *lexer) modelName() Token {
-	var token Token
-
-	for _, tk := range lex.Tokens {
-		if tk.Type == MODEL_NAME {
-			token = tk
-		}
-	}
-	return token
-}
-
 func (lex *lexer) getLastToken() Token {
 	return lex.Tokens[len(lex.Tokens)-1]
 }
-func (token Token) isOneOfMany(expectedTokens ...TokenType) bool {
+func (token Token) IsOneOfMany(expectedTokens ...TokenType) bool {
 	for _, expected := range expectedTokens {
 		return expected == token.Type
 	}
@@ -68,8 +57,8 @@ func createLexer(source string) *lexer {
 			{regexp.MustCompile(`\{`), defaultHandler(OPEN_CURLY, "{")},
 			{regexp.MustCompile(`\}`), defaultHandler(CLOSE_CURLY, "}")},
 			{regexp.MustCompile(`\bmodel\b`), defaultHandler(MODEL, "model")},
-			{regexp.MustCompile(`(.*?)\s*{`), modelNameHandler},
 			{regexp.MustCompile(`@[^)]+?\)`), columnRelationHandler},
+			{regexp.MustCompile(`(.*?)\s*{`), modelNameHandler},
 			{regexp.MustCompile(`^[A-Z][a-zA-Z]*(\?|(\[\]))?`), columnTypeHandler},
 			{regexp.MustCompile(`^[a-zA-Z]\S*`), columnNameHandler},
 		},
