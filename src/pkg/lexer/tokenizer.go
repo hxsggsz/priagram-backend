@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"priagram/src/pkg/id"
 	"priagram/src/pkg/lexer/formatter"
+	"strings"
 )
 
 // handle the source code and tokenize it
@@ -33,24 +34,26 @@ func Tokenize(source string) []Token {
 	return lex.Tokens
 }
 
-func Format(tokens []Token) []formatter.DiagramData {
+func Format(tokens []Token) ([]formatter.DiagramData, []formatter.Relation) {
 	var formatedDiagram []formatter.DiagramData
+	var relations []formatter.Relation
 
 	modelGroups := splitIntoModels(tokens)
 
 	for _, group := range modelGroups {
 		modelName, modelContents, modelRelations, position := processModel(group)
 
+		relations = append(relations, modelRelations...)
+
 		formatedDiagram = append(formatedDiagram, formatter.NewDiagramData(
 			modelName,
 			"prisma-table",
 			position,
 			modelContents,
-			modelRelations,
 		))
 	}
 
-	return formatedDiagram
+	return formatedDiagram, relations
 }
 
 func splitIntoModels(tokens []Token) [][]Token {
@@ -118,8 +121,8 @@ func createRelations(modelName string, relations []string) []formatter.Relation 
 	var modelRelations []formatter.Relation
 
 	for _, relation := range relations {
-		formatedId := id.FmtId(modelName, relation)
-		newRelation := formatter.NewRelation(formatedId, modelName, relation)
+		formatedId := id.FmtId(strings.ToLower(modelName), relation)
+		newRelation := formatter.NewRelation(formatedId, strings.ToLower(relation), strings.ToLower(modelName))
 		modelRelations = append(modelRelations, newRelation)
 	}
 

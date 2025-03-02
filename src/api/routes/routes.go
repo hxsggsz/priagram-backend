@@ -8,6 +8,7 @@ import (
 	"priagram/src/api/config/headers"
 	"priagram/src/api/dtos"
 	"priagram/src/pkg/lexer"
+	"priagram/src/pkg/lexer/formatter"
 )
 
 func HealthCheck(w http.ResponseWriter, r *http.Request) {
@@ -48,7 +49,7 @@ func PrismaToDiagram(w http.ResponseWriter, r *http.Request) {
 	}
 
 	tokens := lexer.Tokenize(prismaRequest.Source)
-	formatedData := lexer.Format(tokens)
+	formatedData, relations := lexer.Format(tokens)
 
-	json.NewEncoder(w).Encode(formatedData)
+	json.NewEncoder(w).Encode(formatter.NewDiagram(formatedData, relations))
 }

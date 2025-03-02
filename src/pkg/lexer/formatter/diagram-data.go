@@ -1,20 +1,22 @@
 package formatter
 
-import (
-	"priagram/src/pkg/id"
-)
+import "strings"
 
 type DiagramData struct {
-	Id        string     `json:"id"`
-	Type      string     `json:"type"`
-	Position  Position   `json:"position"`
-	Data      Data       `json:"data"`
-	Relations []Relation `json:"relations"`
+	Id       string   `json:"id"`
+	Type     string   `json:"type"`
+	Position Position `json:"position"`
+	Data     Data     `json:"data"`
 }
 
 type Data struct {
 	ModelName    string         `json:"modelName"`
 	ModelContent []ModelContent `json:"modelContent"`
+}
+
+type Diagram struct {
+	Data      []DiagramData `json:"data"`
+	Relations []Relation    `json:"relations"`
 }
 
 func newData(modelName string, modelContent []ModelContent) Data {
@@ -23,12 +25,15 @@ func newData(modelName string, modelContent []ModelContent) Data {
 	}
 }
 
-func NewDiagramData(modelName string, diagramType string, position Position, modelContents []ModelContent, relations []Relation) DiagramData {
-	diagramId := id.FmtId(modelName, diagramType)
+func NewDiagramData(modelName string, diagramType string, position Position, modelContents []ModelContent) DiagramData {
 
-	data := newData(modelName, modelContents)
+	data := newData(strings.ToLower(modelName), modelContents)
 
 	return DiagramData{
-		Id: diagramId, Type: diagramType, Position: position, Data: data, Relations: relations,
+		Id: strings.ToLower(modelName), Type: diagramType, Position: position, Data: data,
 	}
+}
+
+func NewDiagram(data []DiagramData, relations []Relation) Diagram {
+	return Diagram{Data: data, Relations: relations}
 }
