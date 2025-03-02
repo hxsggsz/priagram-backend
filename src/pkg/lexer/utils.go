@@ -53,13 +53,13 @@ func createLexer(source string) *lexer {
 		source: source,
 		Tokens: make([]Token, 0),
 		patterns: []regexPattern{
-			{regexp.MustCompile(`\s+`), skipHandler},                // skips whitespaces
+			{regexp.MustCompile(`\s+`), skipHandler}, // skips whitespaces
+			{regexp.MustCompile(`@relation[^)]+?\)`), columnRelationHandler},
 			{regexp.MustCompile(`@\w+(?:\([^)]*\))?`), skipHandler}, // skips `@id` or `@unique`
-			{regexp.MustCompile(`\)`), skipHandler},                 // skips `@id` or `@unique`
+			{regexp.MustCompile(`\)`), skipHandler},                 // skips `)`
 			{regexp.MustCompile(`\{`), defaultHandler(OPEN_CURLY, "{")},
 			{regexp.MustCompile(`\}`), defaultHandler(CLOSE_CURLY, "}")},
 			{regexp.MustCompile(`\bmodel\b`), defaultHandler(MODEL, "model")},
-			{regexp.MustCompile(`@[^)]+?\)`), columnRelationHandler},
 			{regexp.MustCompile(`(.*?)\s*{`), modelNameHandler},
 			{regexp.MustCompile(`^[A-Z][a-zA-Z]*(\?|(\[\]))?`), columnTypeHandler},
 			{regexp.MustCompile(`^[a-zA-Z]\S*`), columnNameHandler},
