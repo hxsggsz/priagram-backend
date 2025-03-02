@@ -3,10 +3,9 @@ package formatter
 import "strings"
 
 type DiagramData struct {
-	Id       string   `json:"id"`
-	Type     string   `json:"type"`
-	Position Position `json:"position"`
-	Data     Data     `json:"data"`
+	Id   string `json:"id"`
+	Type string `json:"type"`
+	Data Data   `json:"data"`
 }
 
 type Data struct {
@@ -25,12 +24,12 @@ func newData(modelName string, modelContent []ModelContent) Data {
 	}
 }
 
-func NewDiagramData(modelName string, diagramType string, position Position, modelContents []ModelContent) DiagramData {
+func NewDiagramData(modelName string, diagramType string, modelContents []ModelContent) DiagramData {
 
 	data := newData(strings.ToLower(modelName), modelContents)
 
 	return DiagramData{
-		Id: strings.ToLower(modelName), Type: diagramType, Position: position, Data: data,
+		Id: strings.ToLower(modelName), Type: diagramType, Data: data,
 	}
 }
 
