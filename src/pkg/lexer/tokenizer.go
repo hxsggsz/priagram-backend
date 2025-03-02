@@ -39,11 +39,12 @@ func Format(tokens []Token) []formatter.DiagramData {
 	modelGroups := splitIntoModels(tokens)
 
 	for _, group := range modelGroups {
-		modelName, modelContents, modelRelations := processModel(group)
+		modelName, modelContents, modelRelations, position := processModel(group)
 
 		formatedDiagram = append(formatedDiagram, formatter.NewDiagramData(
 			modelName,
 			"prisma-table",
+			position,
 			modelContents,
 			modelRelations,
 		))
@@ -77,7 +78,7 @@ func splitIntoModels(tokens []Token) [][]Token {
 	return groups
 }
 
-func processModel(tokens []Token) (string, []formatter.ModelContent, []formatter.Relation) {
+func processModel(tokens []Token) (string, []formatter.ModelContent, []formatter.Relation, formatter.Position) {
 	var modelName string
 	var colNames, colTypes, colRelations []string
 
@@ -96,8 +97,9 @@ func processModel(tokens []Token) (string, []formatter.ModelContent, []formatter
 
 	modelContents := createModelContents(colNames, colTypes)
 	modelRelations := createRelations(modelName, colRelations)
+	position := formatter.GeneratePosition()
 
-	return modelName, modelContents, modelRelations
+	return modelName, modelContents, modelRelations, position
 }
 
 func createModelContents(colNames, colTypes []string) []formatter.ModelContent {
