@@ -5,6 +5,7 @@ import (
 	"io"
 	"net/http"
 
+	"priagram/src/api/config/headers"
 	"priagram/src/api/dtos"
 	"priagram/src/pkg/lexer"
 )
@@ -21,9 +22,10 @@ type PrismaRequest struct {
 }
 
 func PrismaToDiagram(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		http.Error(w, "Only POST method is allowed", http.StatusMethodNotAllowed)
-		return
+	headers.SetupHeaders(&w)
+
+	if r.Method == http.MethodPost || r.Method == http.MethodOptions {
+		w.WriteHeader(http.StatusOK)
 	}
 
 	body, err := io.ReadAll(r.Body)
@@ -48,7 +50,5 @@ func PrismaToDiagram(w http.ResponseWriter, r *http.Request) {
 	tokens := lexer.Tokenize(prismaRequest.Source)
 	formatedData := lexer.Format(tokens)
 
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(formatedData)
 }
