@@ -1,14 +1,34 @@
 package formatter
 
+import (
+	"priagram/src/pkg/id"
+)
+
 type DiagramData struct {
-	ModelName    string         `json:"modelName"`
-	DiagramType  string         `json:"diagramType"`
-	ModelContent []ModelContent `json:"modelContent"`
-	Relations    []Relation     `json:"relations"`
+	Id        string     `json:"id"`
+	Type      string     `json:"type"`
+	Position  Position   `json:"position"`
+	Data      Data       `json:"data"`
+	Relations []Relation `json:"relations"`
 }
 
-func NewDiagramData(modelName string, diagramType string, modelContents []ModelContent, relations []Relation) DiagramData {
+type Data struct {
+	ModelName    string         `json:"modelName"`
+	ModelContent []ModelContent `json:"modelContent"`
+}
+
+func newData(modelName string, modelContent []ModelContent) Data {
+	return Data{
+		ModelName: modelName, ModelContent: modelContent,
+	}
+}
+
+func NewDiagramData(modelName string, diagramType string, position Position, modelContents []ModelContent, relations []Relation) DiagramData {
+	diagramId := id.FmtId(modelName, diagramType)
+
+	data := newData(modelName, modelContents)
+
 	return DiagramData{
-		ModelName: modelName, DiagramType: diagramType, ModelContent: modelContents, Relations: relations,
+		Id: diagramId, Type: diagramType, Position: position, Data: data, Relations: relations,
 	}
 }
