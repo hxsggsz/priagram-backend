@@ -55,8 +55,9 @@ func createLexer(source string) *lexer {
 		patterns: []regexPattern{
 			{regexp.MustCompile(`\s+`), skipHandler}, // skips whitespaces
 			{regexp.MustCompile(`@relation[^)]+?\)`), columnRelationHandler},
-			{regexp.MustCompile(`@\w+(?:\([^)]*\))?`), skipHandler}, // skips `@id` or `@unique`
-			{regexp.MustCompile(`\)`), skipHandler},                 // skips `)`
+			{regexp.MustCompile(`@\w+(?:\([^)]*\))?`), skipHandler},  // skips `@id` or `@unique`
+			{regexp.MustCompile(`@@\w+(?:\([^)]*\))?`), skipHandler}, // skips `@@map` and etc
+			{regexp.MustCompile(`\)`), skipHandler},                  // skips `)`
 			{regexp.MustCompile(`\{`), defaultHandler(OPEN_CURLY, "{")},
 			{regexp.MustCompile(`\}`), defaultHandler(CLOSE_CURLY, "}")},
 			{regexp.MustCompile(`\bmodel\b`), defaultHandler(MODEL, "model")},
