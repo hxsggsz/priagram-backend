@@ -1,6 +1,8 @@
 package lexer
 
-import "regexp"
+import (
+	"regexp"
+)
 
 // advance the position of the code that it's currently tokenizing in N positions
 // it takes one integer as a parameter
@@ -43,6 +45,32 @@ func (token Token) IsOneOfMany(expectedTokens ...TokenType) bool {
 	return false
 }
 
+func (lex *lexer) isTypeAEnum(typeName string) bool {
+	tokens := lex.Tokens
+	inEnum := false
+
+	for _, token := range tokens {
+
+		if token.Type == ENUM {
+			inEnum = true
+			continue
+		}
+
+		if inEnum {
+			switch token.Type {
+			case CLOSE_CURLY:
+				inEnum = false
+			case MODEL_NAME:
+				if token.Value == typeName {
+					return true
+				}
+			}
+		}
+	}
+
+	return false
+}
+
 func (lex *lexer) atEof() bool {
 	return lex.pos >= len(lex.source)
 }
@@ -61,7 +89,9 @@ func createLexer(source string) *lexer {
 			{regexp.MustCompile(`\)`), skipHandler},                  // skips `)`
 			{regexp.MustCompile(`\{`), defaultHandler(OPEN_CURLY, "{")},
 			{regexp.MustCompile(`\}`), defaultHandler(CLOSE_CURLY, "}")},
+			{regexp.MustCompile(`\benum\b`), defaultHandler(ENUM, "enum")},
 			{regexp.MustCompile(`\bmodel\b`), defaultHandler(MODEL, "model")},
+			{regexp.MustCompile(`(?m)^\s*([A-Z_]+)\b`), columnEnumHandler}, // gets enums content
 			{regexp.MustCompile(`(.*?)\s*{`), modelNameHandler},
 			{regexp.MustCompile(`^[A-Z][a-zA-Z]*(\?|(\[\]))?`), columnTypeHandler},
 			{regexp.MustCompile(`^[a-zA-Z]\S*`), columnNameHandler},

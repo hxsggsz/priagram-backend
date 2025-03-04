@@ -32,6 +32,13 @@ func modelNameHandler(lex *lexer, regex *regexp.Regexp) {
 	lex.push(newToken(MODEL_NAME, modelName))
 }
 
+func columnEnumHandler(lex *lexer, regex *regexp.Regexp) {
+	match := regex.FindStringSubmatch(lex.remainingSourceCode())
+
+	lex.push(newToken(COLUMN_ENUM, match[0]))
+	lex.advancePosition(len(match[0]))
+}
+
 func columnNameHandler(lex *lexer, regex *regexp.Regexp) {
 	match := regex.FindStringSubmatch(lex.remainingSourceCode())
 
@@ -42,14 +49,22 @@ func columnNameHandler(lex *lexer, regex *regexp.Regexp) {
 func columnTypeHandler(lex *lexer, regex *regexp.Regexp) {
 	matches := regex.FindStringSubmatch(lex.remainingSourceCode())
 	match := matches[0]
-	lastToken := lex.getLastToken().Value
 
-	if strings.Contains(match, lastToken) {
+	lastToken := lex.getLastToken()
+	isTypeEnum := lex.isTypeAEnum(match)
+
+	if strings.Contains(match, lastToken.Value) {
 		lex.advancePosition(len(match))
 		lex.removeLastToken()
-	} else {
-		lex.advancePosition(len(match))
-		lex.push(newToken(COLUMN_TYPE, match))
+
+		return
+	}
+
+	lex.advancePosition(len(match))
+	lex.push(newToken(COLUMN_TYPE, match))
+
+	if isTypeEnum {
+		lex.push(newToken(RELATION, match))
 	}
 }
 

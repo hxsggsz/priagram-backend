@@ -60,7 +60,7 @@ func splitIntoModels(tokens []Token) [][]Token {
 	inModel := false
 
 	for _, tk := range tokens {
-		if tk.Type == MODEL {
+		if tk.Type == MODEL || tk.Type == ENUM {
 			inModel = true
 			currentGroup = []Token{}
 			continue
@@ -87,7 +87,7 @@ func processModel(tokens []Token) (string, []formatter.ModelContent, []formatter
 		switch tk.Type {
 		case MODEL_NAME:
 			modelName = tk.Value
-		case COLUMN_NAME:
+		case COLUMN_NAME, COLUMN_ENUM:
 			colNames = append(colNames, tk.Value)
 		case COLUMN_TYPE:
 			colTypes = append(colTypes, tk.Value)
@@ -104,10 +104,20 @@ func processModel(tokens []Token) (string, []formatter.ModelContent, []formatter
 
 func createModelContents(colNames, colTypes []string) []formatter.ModelContent {
 	var contents []formatter.ModelContent
+	var mc formatter.ModelContent
 
 	for i := 0; i < len(colNames); i++ {
-		formatedId := id.FmtId(colNames[i], colTypes[i])
-		mc := formatter.NewModelContent(formatedId, colNames[i], colTypes[i])
+		var formatedId string
+		isModelEnum := len(colTypes) < 1
+
+		if isModelEnum {
+			formatedId = id.FmtId(colNames[i], "enum")
+			mc = formatter.NewModelContent(formatedId, colNames[i], "enum")
+		} else {
+			formatedId = id.FmtId(colNames[i], colTypes[i])
+			mc = formatter.NewModelContent(formatedId, colNames[i], colTypes[i])
+		}
+
 		contents = append(contents, mc)
 	}
 
@@ -118,6 +128,7 @@ func createRelations(modelName string, relations []string) []formatter.Relation 
 	var modelRelations []formatter.Relation
 
 	for _, relation := range relations {
+
 		formatedId := id.FmtId(strings.ToLower(modelName), relation)
 		newRelation := formatter.NewRelation(formatedId, strings.ToLower(relation), strings.ToLower(modelName))
 		modelRelations = append(modelRelations, newRelation)
