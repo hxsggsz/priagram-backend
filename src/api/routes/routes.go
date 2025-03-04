@@ -2,11 +2,13 @@ package routes
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 
 	"priagram/src/api/config/headers"
 	"priagram/src/api/dtos"
+	"priagram/src/api/utils"
 	"priagram/src/pkg/lexer"
 	"priagram/src/pkg/lexer/formatter"
 )
@@ -25,31 +27,39 @@ type PrismaRequest struct {
 func PrismaToDiagram(w http.ResponseWriter, r *http.Request) {
 	headers.SetupHeaders(&w)
 
-	if r.Method == http.MethodPost || r.Method == http.MethodOptions {
+	if r.Method == http.MethodOptions {
 		w.WriteHeader(http.StatusOK)
 	}
 
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
-		http.Error(w, "Unable to read request body", http.StatusBadRequest)
+		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("unable to read request body"))
 		return
 	}
 
 	defer r.Body.Close()
 
 	var prismaRequest PrismaRequest
+
 	err = json.Unmarshal(body, &prismaRequest)
 	if err != nil {
-		http.Error(w, "Invalid JSON", http.StatusBadRequest)
+		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("unable to read json file"))
 		return
 	}
 
 	if prismaRequest.Source == "" {
-		http.Error(w, "Invalid JSON -> missing source in body", http.StatusBadRequest)
+		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("missing `source` in json"))
+		return
 	}
 
-	tokens := lexer.Tokenize(prismaRequest.Source)
+	tokens, err := lexer.Tokenize(prismaRequest.Source)
+
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+		return
+	}
+
 	formatedData, relations := lexer.Format(tokens)
 
-	json.NewEncoder(w).Encode(formatter.NewDiagram(formatedData, relations))
+	utils.WriteJSON(w, http.StatusOK, formatter.NewDiagram(formatedData, relations))
 }

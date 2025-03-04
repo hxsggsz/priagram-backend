@@ -28,12 +28,6 @@ func modelNameHandler(lex *lexer, regex *regexp.Regexp) {
 	match := regex.FindStringIndex(lex.remainingSourceCode())
 	modelName := strings.TrimSpace(lex.remainingSourceCode()[:match[1]-1])
 
-	err := validateModelName(modelName)
-
-	if err != nil {
-		panic(err)
-	}
-
 	lex.advancePosition(len(modelName))
 	lex.push(newToken(MODEL_NAME, modelName))
 }

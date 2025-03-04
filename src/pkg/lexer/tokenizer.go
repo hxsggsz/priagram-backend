@@ -8,7 +8,7 @@ import (
 )
 
 // handle the source code and tokenize it
-func Tokenize(source string) []Token {
+func Tokenize(source string) ([]Token, error) {
 	lex := createLexer(source)
 
 	for !lex.atEof() {
@@ -24,14 +24,13 @@ func Tokenize(source string) []Token {
 			}
 		}
 
-		// TODO: update this to print the location and the line it happened
 		if !matched {
-			panic(fmt.Sprintf("Lexer::Error -> unrecognized token at position (%d) near %s\n", lex.pos, lex.remainingSourceCode()))
+			return nil, fmt.Errorf("Lexer::Error -> unrecognized token at position (%d) near %s", lex.pos, lex.remainingSourceCode())
 		}
 	}
 
 	lex.push(newToken(EOF, "EOF"))
-	return lex.Tokens
+	return lex.Tokens, nil
 }
 
 func Format(tokens []Token) ([]formatter.DiagramData, []formatter.Relation) {
