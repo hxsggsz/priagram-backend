@@ -57,6 +57,7 @@ func createLexer(source string) *lexer {
 			{regexp.MustCompile(`@relation[^)]+?\)`), columnRelationHandler},
 			{regexp.MustCompile(`@\w+(?:\([^)]*\))?`), skipHandler},  // skips `@id` or `@unique`
 			{regexp.MustCompile(`@@\w+(?:\([^)]*\))?`), skipHandler}, // skips `@@map` and etc
+			{regexp.MustCompile(`^\s*//.*`), skipHandler},            // skips comments
 			{regexp.MustCompile(`\)`), skipHandler},                  // skips `)`
 			{regexp.MustCompile(`\{`), defaultHandler(OPEN_CURLY, "{")},
 			{regexp.MustCompile(`\}`), defaultHandler(CLOSE_CURLY, "}")},
