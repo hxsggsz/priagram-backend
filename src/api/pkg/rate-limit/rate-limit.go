@@ -10,7 +10,7 @@ import (
 
 type nextFunc func(w http.ResponseWriter, r *http.Request)
 
-var limiter = rate.NewLimiter(10, 1) // 10 requests per minute, burst 1
+var limiter = rate.NewLimiter(10, 3) // 10 requests per minute, burst 1
 
 func RateLimitMiddleware(next nextFunc) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
