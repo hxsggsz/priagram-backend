@@ -23,6 +23,8 @@
 
 <h2 id="started">🚀 Getting started</h2>
 
+You can read an article about this project [here](https://dev.to/hxsggsz/lexical-analysis-tokenization-2e4k)
+
 <h3>Prerequisites</h3>
 
 You will need Golang with version 1.23.4 to run this project
@@ -43,7 +45,7 @@ git clone https://github.com/<your-github-username>/priagram-backend.git
 
 <h3>Starting</h3>
 
-How to start your project
+How to start the project
 
 ```bash
 cd priagram-backend
@@ -52,7 +54,6 @@ go run src/main.go
 
 <h2 id="routes">📍 API Endpoints</h2>
 
-Here you can list the main routes of your API, and what are their expected request bodies.
 ​
 | route | description  
 |----------------------|-----------------------------------------------------
